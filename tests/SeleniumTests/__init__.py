@@ -68,14 +68,14 @@ class ChromeTests(SeleniumGenericTests):
     def setUp(self):
         self.driver = webdriver.Remote(
             desired_capabilities=DesiredCapabilities.CHROME,
-            command_executor="http://%s:4444" % SELENIUM_GRID_HOST
+            command_executor=f"http://{SELENIUM_GRID_HOST}:4444",
         )
 
 class EdgeTests(SeleniumGenericTests):
     def setUp(self):
         self.driver = webdriver.Remote(
             desired_capabilities=DesiredCapabilities.EDGE,
-            command_executor="http://%s:4444" % SELENIUM_GRID_HOST
+            command_executor=f"http://{SELENIUM_GRID_HOST}:4444",
         )
 
 
@@ -83,7 +83,7 @@ class FirefoxTests(SeleniumGenericTests):
     def setUp(self):
         self.driver = webdriver.Remote(
             desired_capabilities=DesiredCapabilities.FIREFOX,
-            command_executor="http://%s:4444" % SELENIUM_GRID_HOST
+            command_executor=f"http://{SELENIUM_GRID_HOST}:4444",
         )
 
     def test_title_and_maximize_window(self):

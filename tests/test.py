@@ -104,14 +104,17 @@ def launch_container(container, **kwargs):
     :return: the container ID
     """
     # Build the container if it doesn't exist
-    logger.info("Building %s container..." % container)
-    client.images.build(path='../%s' % container,
-                        tag="%s/%s:%s" % (NAMESPACE, IMAGE_NAME_MAP[container], VERSION),
-                        rm=True)
-    logger.info("Done building %s" % container)
+    logger.info(f"Building {container} container...")
+    client.images.build(
+        path=f'../{container}',
+        tag=f"{NAMESPACE}/{IMAGE_NAME_MAP[container]}:{VERSION}",
+        rm=True,
+    )
+
+    logger.info(f"Done building {container}")
 
     # Run the container
-    logger.info("Running %s container..." % container)
+    logger.info(f"Running {container} container...")
     # Merging env vars
     environment = {
         'http_proxy': http_proxy,
@@ -121,12 +124,15 @@ def launch_container(container, **kwargs):
         'SE_EVENT_BUS_PUBLISH_PORT': 4442,
         'SE_EVENT_BUS_SUBSCRIBE_PORT': 4443
     }
-    container_id = client.containers.run("%s/%s:%s" % (NAMESPACE, IMAGE_NAME_MAP[container], VERSION),
-                                         detach=True,
-                                         environment=environment,
-                                         shm_size="2G",
-                                         **kwargs).short_id
-    logger.info("%s up and running" % container)
+    container_id = client.containers.run(
+        f"{NAMESPACE}/{IMAGE_NAME_MAP[container]}:{VERSION}",
+        detach=True,
+        environment=environment,
+        shm_size="2G",
+        **kwargs,
+    ).short_id
+
+    logger.info(f"{container} up and running")
     return container_id
 
 
@@ -139,7 +145,7 @@ if __name__ == '__main__':
     random_user_id = random.randint(100000, 2147483647)
 
     if use_random_user_id:
-        logger.info("Running tests with a random user ID -> %s" % random_user_id)
+        logger.info(f"Running tests with a random user ID -> {random_user_id}")
 
     standalone = 'standalone' in image.lower()
 
@@ -150,7 +156,7 @@ if __name__ == '__main__':
     test_container_id = ''
     hub_id = ''
     if not run_in_docker_compose:
-        logger.info('========== Starting %s Container ==========' % image)
+        logger.info(f'========== Starting {image} Container ==========')
 
         if standalone:
             """
@@ -179,8 +185,8 @@ if __name__ == '__main__':
 
     try:
         # Smoke tests
-        logger.info('*********** Running smoke tests %s Tests **********' % image)
-        image_class = "%sTest" % image
+        logger.info(f'*********** Running smoke tests {image} Tests **********')
+        image_class = f"{image}Test"
         module = __import__('SmokeTests', fromlist='GridTest')
         test_class = getattr(module, 'GridTest')
         suite = unittest.TestLoader().loadTestsFromTestCase(test_class)
@@ -192,7 +198,7 @@ if __name__ == '__main__':
 
     try:
         # Run Selenium tests
-        logger.info('*********** Running Selenium tests %s Tests **********' % image)
+        logger.info(f'*********** Running Selenium tests {image} Tests **********')
         test_class = getattr(__import__('SeleniumTests', fromlist=[TEST_NAME_MAP[image]]), TEST_NAME_MAP[image])
         suite = unittest.TestLoader().loadTestsFromTestCase(test_class)
         test_runner = unittest.TextTestRunner(verbosity=3)
